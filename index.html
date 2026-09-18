@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Harga Produk Digital</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SheetJS (xlsx) for Excel Import & Export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+
+<!-- HEADER NAVBAR -->
+<header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <!-- Logo & Brand -->
+            <div class="flex items-center space-x-3 cursor-pointer select-none" id="secretLogoTrigger" title="EzyDigital Catalog (Klik 5x untuk Login Admin)">
+                <div class="bg-gradient-to-tr from-indigo-600 to-blue-500 text-white p-2.5 rounded-xl shadow-md">
+                    <i class="fa-solid font-bold fa-bolt text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 tracking-tight leading-tight">EzyDigital</h1>
+                    <p class="text-xs text-slate-500 font-medium">Informasi Harga Pulsa & Digital</p>
+                </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <button onclick="openCSModal()" class="inline-flex items-center space-x-2 text-sm bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-semibold px-3.5 py-2 rounded-lg transition border border-emerald-200">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>Hubungi Admin</span>
+                </button>
+                
+                <!-- Admin Button (Hidden by default for customers) -->
+                <button id="adminToggleBtn" onclick="openAdminAuthModal()" class="hidden inline-flex items-center space-x-2 text-sm bg-slate-900 hover:bg-indigo-600 text-white font-medium px-4 py-2 rounded-lg transition shadow-sm">
+                    <i class="fa-solid fa-lock text-xs"></i>
+                    <span id="adminBtnText">Panel Admin</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- RUNNING TEXT ANNOUNCEMENT BANNER -->
+<div id="runningAnnouncement" class="bg-amber-500 text-slate-900 py-1.5 px-4 text-xs font-semibold overflow-hidden border-b border-amber-600 flex items-center shadow-inner">
+    <span class="bg-slate-900 text-amber-300 text-[10px] uppercase font-extrabold px-2 py-0.5 rounded mr-3 shrink-0 flex items-center gap-1">
+        <i class="fa-solid fa-bullhorn text-xs"></i> Info Toko
+    </span>
+    <marquee behavior="scroll" direction="left" id="announcementText" class="w-full">
+        Selamat datang di Katalog Harga Resmi! Harga selalu terupdate real-time. Untuk transaksi silahkan hubungi kontak admin WhatsApp/Telegram kami.
+    </marquee>
+    <button id="editAnnouncementBtn" onclick="openAnnouncementModal()" class="hidden shrink-0 ml-3 text-slate-900 hover:bg-amber-600/30 px-2 py-0.5 rounded text-[11px] underline">
+        <i class="fa-solid fa-pen-to-square"></i> Edit Text
+    </button>
+</div>
+
+<!-- MAIN CONTENT WRAPPER -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-grow">
+    
+    <!-- Hero Notice & CS Banner -->
+    <div class="mb-6 bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl font-bold">
+            <i class="fa-solid fa-tags"></i>
+        </div>
+        <div class="relative z-10 max-w-3xl">
+            <div class="inline-flex items-center space-x-2 bg-indigo-500/30 border border-indigo-400/30 rounded-full px-3 py-1 text-xs font-medium text-indigo-200 mb-3">
+                <i class="fa-solid fa-circle-info text-indigo-300"></i>
+                <span>Informasi Resmi Katalog Harga</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">Pricelist Terupdate & Real-Time</h2>
+            <p class="text-indigo-100 text-sm sm:text-base leading-relaxed">
+                Halaman ini khusus memberikan rincian harga terkini Pulsa Reguler, Paket Data, E-Wallet, dan Token PLN. 
+                <span class="underline decoration-indigo-400 decoration-2 font-medium">Halaman ini hanya untuk informasi harga (tanpa fitur transaksi langsung)</span>.
+            </p>
+        </div>
+    </div>
+
+    <!-- CATEGORY TABS & SEARCH CONTAINER -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 mb-6">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            
+            <!-- Search Box -->
+            <div class="relative flex-grow max-w-md">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="Cari provider, nominal, atau kode (ex: Telkomsel, DANA)..." class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+                <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Category Filters -->
+            <div class="flex items-center space-x-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-none">
+                <button onclick="setCategory('ALL')" class="cat-btn active whitespace-nowrap px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl transition bg-indigo-600 text-white shadow-sm" data-cat="ALL">
+                    <i class="fa-solid fa-grid-2 mr-1.5"></i>Semua
+                </button>
+                <button onclick="setCategory('PULSA')" class="cat-btn whitespace-nowrap px-4 py-2 text-xs sm:text-sm font-medium rounded-xl transition bg-slate-100 text-slate-600 hover:bg-slate-200" data-cat="PULSA">
+                    <i class="fa-solid fa-mobile-screen mr-1.5 text-blue-500"></i>Pulsa Reguler
+                </button>
+                <button onclick="setCategory('DATA')" class="cat-btn whitespace-nowrap px-4 py-2 text-xs sm:text-sm font-medium rounded-xl transition bg-slate-100 text-slate-600 hover:bg-slate-200" data-cat="DATA">
+                    <i class="fa-solid fa-wifi mr-1.5 text-indigo-500"></i>Paket Data
+                </button>
+                <button onclick="setCategory('EWALLET_FIX')" class="cat-btn whitespace-nowrap px-4 py-2 text-xs sm:text-sm font-medium rounded-xl transition bg-slate-100 text-slate-600 hover:bg-slate-200" data-cat="EWALLET_FIX">
+                    <i class="fa-solid fa-wallet mr-1.5 text-emerald-500"></i>E-Wallet Fix
+                </button>
+                <button onclick="setCategory('EWALLET_OPEN')" class="cat-btn whitespace-nowrap px-4 py-2 text-xs sm:text-sm font-medium rounded-xl transition bg-slate-100 text-slate-600 hover:bg-slate-200" data-cat="EWALLET_OPEN">
+                    <i class="fa-solid fa-sliders mr-1.5 text-purple-500"></i>E-Wallet Open
+                </button>
+                <button onclick="setCategory('PLN')" class="cat-btn whitespace-nowrap px-4 py-2 text-xs sm:text-sm font-medium rounded-xl transition bg-slate-100 text-slate-600 hover:bg-slate-200" data-cat="PLN">
+                    <i class="fa-solid fa-bolt mr-1.5 text-amber-500"></i>Token PLN
+                </button>
+            </div>
+        </div>
+
+        <!-- Provider / Sub-brand Badges Filter -->
+        <div id="providerBadgesContainer" class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap gap-2 text-xs">
+            <!-- Dynamically populated provider tags -->
+        </div>
+    </div>
+
+    <!-- ADMIN BACKEND CONTROL BAR (Active when Admin Mode is ON) -->
+    <div id="adminControlBar" class="hidden mb-6 bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 sm:p-5 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-500 text-white p-2.5 rounded-xl">
+                    <i class="fa-solid fa-user-gear text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-amber-900 text-base">Backend Admin Mode Aktif</h3>
+                    <p class="text-xs text-amber-700">Kelola katalog, tambah/edit harga, ubah PIN admin, serta ekspor/impor data Excel & JSON.</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="openAddProductModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs sm:text-sm px-3.5 py-2 rounded-xl transition shadow-sm flex items-center space-x-1.5">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Tambah Produk</span>
+                </button>
+                <button onclick="openBatchMarkupModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs sm:text-sm px-3.5 py-2 rounded-xl transition shadow-sm flex items-center space-x-1.5">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    <span>Ubah Harga Massal</span>
+                </button>
+                
+                <!-- Excel & PIN Action Buttons -->
+                <button onclick="downloadSampleExcel()" class="bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs sm:text-sm px-3 py-2 rounded-xl transition shadow-sm flex items-center space-x-1" title="Download Template Sample Excel">
+                    <i class="fa-solid fa-file-excel"></i>
+                    <span>Sample Excel</span>
+                </button>
+                <label class="bg-emerald-700 hover:bg-emerald-800 text-white font-medium text-xs sm:text-sm px-3 py-2 rounded-xl transition shadow-sm flex items-center space-x-1 cursor-pointer" title="Import Produk dari File Excel (.xlsx / .csv)">
+                    <i class="fa-solid fa-file-import"></i>
+                    <span>Upload Excel</span>
+                    <input type="file" id="importExcelInput" accept=".xlsx, .xls, .csv" onchange="importDataExcel(event)" class="hidden">
+                </label>
+                <button onclick="openChangePinModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-medium text-xs sm:text-sm px-3 py-2 rounded-xl transition shadow-sm flex items-center space-x-1" title="Ubah Password / PIN Admin">
+                    <i class="fa-solid fa-key"></i>
+                    <span>Ubah PIN</span>
+                </button>
+
+                <!-- Backup & Restore JSON -->
+                <button onclick="exportDataJSON()" class="bg-slate-700 hover:bg-slate-800 text-white font-medium text-xs sm:text-sm px-3 py-2 rounded-xl transition shadow-sm flex items-center space-x-1" title="Backup Data ke File JSON">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Backup</span>
+                </button>
+                <label class="bg-slate-700 hover:bg-slate-800 text-white font-medium text-xs sm:text-sm px-3 py-2 rounded-xl transition shadow-sm flex items-center space-x-1 cursor-pointer" title="Restore Data dari File JSON">
+                    <i class="fa-solid fa-upload"></i>
+                    <span>Restore</span>
+                    <input type="file" id="importJsonInput" accept=".json" onchange="importDataJSON(event)" class="hidden">
+                </label>
+
+                <button onclick="exitAdminMode()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium text-xs sm:text-sm px-3.5 py-2 rounded-xl transition">
+                    Keluar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCT PRICE LIST TABLE / GRID CONTAINER -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <!-- View Toggle Header -->
+        <div class="px-5 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <span class="font-bold text-slate-800 text-sm sm:text-base">Katalog Produk</span>
+                <span id="productCountBadge" class="bg-indigo-100 text-indigo-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">0 Produk</span>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+                <button id="viewTableBtn" onclick="switchView('table')" class="p-1.5 rounded-lg border border-slate-300 bg-white text-indigo-600 shadow-xs" title="Tampilan Tabel">
+                    <i class="fa-solid fa-list text-sm"></i>
+                </button>
+                <button id="viewGridBtn" onclick="switchView('grid')" class="p-1.5 rounded-lg border border-slate-300 bg-slate-100 text-slate-500 hover:bg-white" title="Tampilan Grid Card">
+                    <i class="fa-solid fa-grip text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- TABLE VIEW -->
+        <div id="tableView" class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-100/70 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        <th class="py-3.5 px-4 sm:px-6">Kode Produk</th>
+                        <th class="py-3.5 px-4">Brand / Provider</th>
+                        <th class="py-3.5 px-4">Nama Produk & Nominal</th>
+                        <th class="py-3.5 px-4 text-right">Harga / Biaya Admin</th>
+                        <th class="py-3.5 px-4 text-center">Status</th>
+                        <th class="py-3.5 px-4 text-right admin-col hidden">Aksi (Admin)</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody" class="divide-y divide-slate-100 text-sm font-medium">
+                    <!-- Table rows populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- GRID CARD VIEW (Alternative View) -->
+        <div id="gridView" class="hidden p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Cards populated dynamically -->
+        </div>
+
+        <!-- Empty State Loader / No Data -->
+        <div id="emptyState" class="hidden p-12 text-center">
+            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400 text-2xl">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-700">Tidak Ada Produk Ditemukan</h3>
+            <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Coba ubah kata kunci pencarian atau ganti kategori filter di atas.</p>
+            <button onclick="resetFilters()" class="mt-4 px-4 py-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-semibold text-xs rounded-xl transition">
+                Reset Filter
+            </button>
+        </div>
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex items-center space-x-2">
+            <div class="bg-indigo-600 text-white p-1.5 rounded-lg">
+                <i class="fa-solid fa-bolt text-xs"></i>
+            </div>
+            <span class="font-bold text-white text-sm">EzyDigital Catalog</span>
+            <span class="text-slate-500">| PT AYO BAYAR INDONESIA</span>
+            <!-- Secret Admin Lock Icon in Footer (Nonaktif) -->
+            <button onclick="openAdminAuthModal()" class="text-slate-700 hover:text-slate-400 transition ml-2" title="Login Admin Rahasia">
+                <i class="fa-solid fa-lock text-[10px]"></i>
+            </button>
+        </div>
+        <p class="text-center sm:text-right">Harga dapat berubah sewaktu-waktu pastikan anda selalu memantau channel telegram kami.</p>
+    </div>
+</footer>
+
+<!-- TOAST NOTIFICATION CONTAINER -->
+<div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 border border-slate-700">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+        <span id="toastMessage" class="text-xs font-semibold">Notifikasi</span>
+    </div>
+</div>
+
+<!-- MODAL 1: ADMIN LOGIN AUTH -->
+<div id="adminAuthModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all">
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center space-x-2 text-indigo-600">
+                <i class="fa-solid fa-shield-halved text-xl"></i>
+                <h3 class="font-bold text-slate-900 text-lg">Masuk Mode Admin</h3>
+            </div>
+            <button onclick="closeAdminAuthModal()" class="text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+        <p class="text-xs text-slate-500 mb-4">Masukkan PIN Admin untuk mengakses fitur tambah, edit harga, dan hapus kode produk.</p>
+        
+        <form onsubmit="handleAdminLogin(event)">
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Admin</label>
+                <input type="password" id="adminPinInput" placeholder="Masukkan PIN" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+            </div>
+            <div id="loginErrorMsg" class="hidden mb-3 p-2.5 bg-red-50 text-red-600 text-xs rounded-lg font-medium border border-red-100">
+                PIN Admin salah. Silahkan coba lagi.
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" onclick="closeAdminAuthModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl">Batal</button>
+                <button type="submit" class="px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm">Verifikasi PIN</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL 2: ADD / EDIT PRODUCT (BACKEND) -->
+<div id="productModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 my-8">
+        <div class="flex justify-between items-center mb-5">
+            <h3 id="modalTitle" class="font-bold text-slate-900 text-lg">Tambah Produk Baru</h3>
+            <button onclick="closeProductModal()" class="text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <form id="productForm" onsubmit="handleSaveProduct(event)">
+            <input type="hidden" id="editProductId">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <!-- Category -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori Produk *</label>
+                    <select id="formCategory" onchange="handleCategoryChangeInModal()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        <option value="PULSA">Pulsa Reguler</option>
+                        <option value="DATA">Paket Data</option>
+                        <option value="EWALLET_FIX">E-Wallet Fix Denom</option>
+                        <option value="EWALLET_OPEN">E-Wallet Open Denom</option>
+                        <option value="PLN">Token PLN</option>
+                    </select>
+                </div>
+
+                <!-- Kode Produk -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Kode Produk *</label>
+                    <input type="text" id="formCode" placeholder="ex: TSEL10 / PLN20" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <!-- Brand / Provider -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Brand / Provider *</label>
+                    <input type="text" id="formBrand" placeholder="ex: Telkomsel, DANA, PLN" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                </div>
+
+                <!-- Nominal / Detail -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nominal / Varian *</label>
+                    <input type="text" id="formNominal" placeholder="ex: 10.000 / 2GB 30Hr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                </div>
+            </div>
+
+            <!-- Product Name Full -->
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap Produk *</label>
+                <input type="text" id="formName" placeholder="ex: Telkomsel Pulsa Reguler 10.000" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <!-- Price / Admin Fee -->
+                <div>
+                    <label id="priceLabel" class="block text-xs font-semibold text-slate-700 mb-1">Harga Jual (Rp) *</label>
+                    <input type="number" id="formPrice" placeholder="10500" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                </div>
+
+                <!-- Status -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Status Produk *</label>
+                    <select id="formStatus" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        <option value="READY">🟢 Ready (Normal)</option>
+                        <option value="GANGGUAN">🟡 Gangguan</option>
+                        <option value="KOSONG">🔴 Kosong / Close</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Open Denom Note -->
+            <div id="openDenomNote" class="hidden mb-4 p-3 bg-purple-50 text-purple-800 rounded-xl text-xs border border-purple-200">
+                <i class="fa-solid fa-circle-info mr-1"></i>
+                <span>Untuk produk <strong>Open Denom</strong>, harga di atas dianggap sebagai <strong>Biaya Admin Jasa</strong> per transaksi.</span>
+            </div>
+
+            <div class="flex justify-end space-x-2 pt-2 border-t border-slate-100">
+                <button type="button" onclick="closeProductModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl">Batal</button>
+                <button type="submit" class="px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm">Simpan Produk</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL 3: BATCH MARKUP PRICES (ADMIN TOOL) -->
+<div id="batchMarkupModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-slate-900 text-lg">Ubah Harga Massal (Batch Edit)</h3>
+            <button onclick="closeBatchMarkupModal()" class="text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+        <p class="text-xs text-slate-500 mb-4">Ubah harga beberapa produk sekaligus berdasarkan kategori dengan penambahan nominal atau persentase.</p>
+
+        <form onsubmit="handleApplyBatchMarkup(event)">
+            <div class="mb-3">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Target Kategori</label>
+                <select id="batchCategory" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+                    <option value="ALL">Semua Kategori</option>
+                    <option value="PULSA">Pulsa Reguler</option>
+                    <option value="DATA">Paket Data</option>
+                    <option value="EWALLET_FIX">E-Wallet Fix Denom</option>
+                    <option value="EWALLET_OPEN">E-Wallet Open Denom</option>
+                    <option value="PLN">Token PLN</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Tipe Penyesuaian</label>
+                    <select id="batchType" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+                        <option value="ADD_FIXED">+ Tambah Nominal (Rp)</option>
+                        <option value="SUB_FIXED">- Kurang Nominal (Rp)</option>
+                        <option value="ADD_PERCENT">+ Tambah Persen (%)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nilai Penyesuaian</label>
+                    <input type="number" id="batchValue" placeholder="ex: 500 / 5" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-2">
+                <button type="button" onclick="closeBatchMarkupModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl">Batal</button>
+                <button type="submit" class="px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm">Terapkan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL 4: CS CONTACT MODAL -->
+<div id="csModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center relative">
+        <button onclick="closeCSModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+        <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">
+            <i class="fa-brands fa-whatsapp"></i>
+        </div>
+        <h3 class="font-bold text-slate-900 text-lg">Hubungi Customer Service</h3>
+        <p class="text-xs text-slate-500 mt-1 mb-5">Ingin bertransaksi atau konfirmasi ketersediaan stok? Hubungi admin via WhatsApp / Telegram.</p>
+
+        <div class="space-y-2.5">
+            <a id="csWhatsappBtn" href="#" target="_blank" class="flex items-center justify-center space-x-2 w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl transition shadow-sm">
+                <i class="fa-brands fa-whatsapp text-base"></i>
+                <span id="csWhatsappText">WhatsApp Admin</span>
+            </a>
+            <a id="csTelegramBtn" href="#" target="_blank" class="flex items-center justify-center space-x-2 w-full py-2.5 px-4 bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs rounded-xl transition shadow-sm">
+                <i class="fa-brands fa-telegram text-base"></i>
+                <span id="csTelegramText">Telegram Admin</span>
+            </a>
+        </div>
+        <button onclick="closeCSModal()" class="mt-4 w-full py-2 text-xs font-semibold text-slate-500 hover:text-slate-700">
+            Tutup
+        </button>
+    </div>
+</div>
+
+<!-- MODAL 5: EDIT ANNOUNCEMENT -->
+<div id="announcementModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-slate-900 text-lg">Edit Teks Pengumuman Toko</h3>
+            <button onclick="closeAnnouncementModal()" class="text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+        <form onsubmit="handleSaveAnnouncement(event)">
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Teks Running Text</label>
+                <textarea id="announcementInput" rows="3" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500" required></textarea>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" onclick="closeAnnouncementModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl">Batal</button>
+                <button type="submit" class="px-5 py-2 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-xl shadow-sm">Simpan Teks</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL 6: UBAH PIN ADMIN -->
+<div id="changePinModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center space-x-2 text-amber-600">
+                <i class="fa-solid fa-key text-xl"></i>
+                <h3 class="font-bold text-slate-900 text-lg">Ubah PIN Admin</h3>
+            </div>
+            <button onclick="closeChangePinModal()" class="text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+        <p class="text-xs text-slate-500 mb-4">Ganti PIN keamanan untuk masuk ke Panel Admin toko Anda.</p>
+
+        <form onsubmit="handleChangePin(event)">
+            <div class="mb-3">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Lama</label>
+                <input type="password" id="oldPinInput" placeholder="Masukkan PIN lama" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" required>
+            </div>
+            <div class="mb-3">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Baru</label>
+                <input type="password" id="newPinInput" placeholder="Masukkan PIN baru" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" required minlength="4">
+            </div>
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Konfirmasi PIN Baru</label>
+                <input type="password" id="confirmNewPinInput" placeholder="Ulangi PIN baru" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" required minlength="4">
+            </div>
+            <div id="changePinErrorMsg" class="hidden mb-3 p-2.5 bg-red-50 text-red-600 text-xs rounded-lg font-medium border border-red-100">
+                Gagal memperbarui PIN.
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" onclick="closeChangePinModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl">Batal</button>
+                <button type="submit" class="px-5 py-2 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-xl shadow-sm">Simpan PIN Baru</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- FIREBASE MODULES & APP SCRIPT -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // =========================================================================
+    // 🛠️ KONFIGURASI PENGGUNA (UBAH NOMOR WA, TELEGRAM, PIN & DATABASE DISINI)
+    // =========================================================================
+    window.APP_CONFIG = {
+        whatsappNumber: "6282233111722",
+        telegramUsername: "cs_ezypulsa",
+        adminPin: "1234", // Ganti dengan PIN Admin rahasia Anda
+        
+        // Kredensial Firebase Anda:
+        firebaseCustom: {
+            apiKey: "AIzaSyDpFtwPPcNuMJzz0Ul4O9nKcmcidyGbFcw",
+            authDomain: "ezydigital-web.firebaseapp.com",
+            projectId: "ezydigital-web",
+            storageBucket: "ezydigital-web.firebasestorage.app",
+            messagingSenderId: "205265951955",
+            appId: "1:205265951955:web:71b2c025ba8a0dabbb4826"
+        }
+    };
+
+    // Global State
+    let products = [];
+    let filteredProducts = [];
+    let currentCategory = 'ALL';
+    let currentProviderFilter = 'ALL';
+    let currentViewMode = 'table';
+    let isAdminLoggedIn = false;
+    let currentAdminPin = window.APP_CONFIG.adminPin;
+    let db = null;
+    let auth = null;
+    let unsubscribeFirestore = null;
+    let announcementText = "Selamat datang di Katalog Harga Resmi! Harga selalu terupdate real-time. Untuk transaksi silahkan hubungi kontak admin WhatsApp/Telegram kami.";
+
+    // Get Active Admin PIN (prioritizes Memory/Firestore, LocalStorage, falls back to APP_CONFIG)
+    function getActiveAdminPin() {
+        return currentAdminPin || localStorage.getItem('EzyDigital_admin_pin') || window.APP_CONFIG.adminPin;
+    }
+
+    // Apply CS Contact links dynamically from config
+    function applyContactConfig() {
+        const waBtn = document.getElementById('csWhatsappBtn');
+        const waText = document.getElementById('csWhatsappText');
+        const tgBtn = document.getElementById('csTelegramBtn');
+        const tgText = document.getElementById('csTelegramText');
+
+        if (waBtn && waText) {
+            const num = window.APP_CONFIG.whatsappNumber;
+            waBtn.href = `https://wa.me/${num}?text=Halo%20Admin,%20saya%20ingin%20tanya%20harga%20produk%20dan%20transaksi`;
+            waText.innerText = `WhatsApp Admin (+${num})`;
+        }
+
+        if (tgBtn && tgText) {
+            const username = window.APP_CONFIG.telegramUsername;
+            tgBtn.href = `https://t.me/${username}`;
+            tgText.innerText = `Telegram Admin (@${username})`;
+        }
+    }
+
+    // INITIAL DEFAULT DATA SEED (For initial load or offline fallback)
+    const DEFAULT_SEED_DATA = [
+        // PULSA REGULER
+        { id: 'TSEL5', code: 'TSEL5', category: 'PULSA', brand: 'Telkomsel', name: 'Telkomsel Pulsa Reguler 5.000', nominal: '5.000', price: 5850, status: 'READY' },
+        { id: 'TSEL10', code: 'TSEL10', category: 'PULSA', brand: 'Telkomsel', name: 'Telkomsel Pulsa Reguler 10.000', nominal: '10.000', price: 10600, status: 'READY' },
+        { id: 'TSEL25', code: 'TSEL25', category: 'PULSA', brand: 'Telkomsel', name: 'Telkomsel Pulsa Reguler 25.000', nominal: '25.000', price: 25400, status: 'READY' },
+        { id: 'TSEL50', code: 'TSEL50', category: 'PULSA', brand: 'Telkomsel', name: 'Telkomsel Pulsa Reguler 50.000', nominal: '50.000', price: 50200, status: 'READY' },
+        { id: 'ISAT10', code: 'ISAT10', category: 'PULSA', brand: 'Indosat', name: 'Indosat Ooredoo Pulsa 10.000', nominal: '10.000', price: 10750, status: 'READY' },
+        { id: 'ISAT25', code: 'ISAT25', category: 'PULSA', brand: 'Indosat', name: 'Indosat Ooredoo Pulsa 25.000', nominal: '25.000', price: 25200, status: 'READY' },
+        { id: 'XL10', code: 'XL10', category: 'PULSA', brand: 'XL', name: 'XL Axiata Pulsa 10.000', nominal: '10.000', price: 10800, status: 'READY' },
+        { id: 'TRI10', code: 'TRI10', category: 'PULSA', brand: 'Tri', name: 'Tri (3) Pulsa 10.000', nominal: '10.000', price: 10250, status: 'GANGGUAN' },
+        
+        // PAKET DATA
+        { id: 'TSELD1', code: 'TSELD1', category: 'DATA', brand: 'Telkomsel', name: 'Telkomsel Data OMG 1GB 30 Hari', nominal: '1GB / 30Hr', price: 14500, status: 'READY' },
+        { id: 'TSELD5', code: 'TSELD5', category: 'DATA', brand: 'Telkomsel', name: 'Telkomsel Data OMG 5GB 30 Hari', nominal: '5GB / 30Hr', price: 38000, status: 'READY' },
+        { id: 'ISATD3', code: 'ISATD3', category: 'DATA', brand: 'Indosat', name: 'Indosat Freedom Internet 3GB 30 Hari', nominal: '3GB / 30Hr', price: 19500, status: 'READY' },
+        { id: 'XLD5', code: 'XLD5', category: 'DATA', brand: 'XL', name: 'XL Extra Combo Flex 5GB', nominal: '5GB', price: 28000, status: 'READY' },
+
+        // EWALLET FIX DENOM
+        { id: 'DANA20', code: 'DANA20', category: 'EWALLET_FIX', brand: 'DANA', name: 'Saldo DANA Rp 20.000', nominal: '20.000', price: 20500, status: 'READY' },
+        { id: 'DANA50', code: 'DANA50', category: 'EWALLET_FIX', brand: 'DANA', name: 'Saldo DANA Rp 50.000', nominal: '50.000', price: 50500, status: 'READY' },
+        { id: 'OVO50', code: 'OVO50', category: 'EWALLET_FIX', brand: 'OVO', name: 'Saldo OVO Rp 50.000', nominal: '50.000', price: 50800, status: 'READY' },
+        { id: 'GOPAY50', code: 'GOPAY50', category: 'EWALLET_FIX', brand: 'GoPay', name: 'Saldo GoPay Rp 50.000', nominal: '50.000', price: 50500, status: 'READY' },
+        { id: 'SPAY50', code: 'SPAY50', category: 'EWALLET_FIX', brand: 'ShopeePay', name: 'Saldo ShopeePay Rp 50.000', nominal: '50.000', price: 50600, status: 'READY' },
+
+        // EWALLET OPEN DENOM
+        { id: 'DANA-OPEN', code: 'DANA-OPEN', category: 'EWALLET_OPEN', brand: 'DANA', name: 'DANA Transfer Open Denom (Bebas Nominal)', nominal: 'Custom Nominal', price: 1000, status: 'READY' },
+        { id: 'OVO-OPEN', code: 'OVO-OPEN', category: 'EWALLET_OPEN', brand: 'OVO', name: 'OVO Cash Open Denom (Bebas Nominal)', nominal: 'Custom Nominal', price: 1500, status: 'READY' },
+        { id: 'GOPAY-OPEN', code: 'GOPAY-OPEN', category: 'EWALLET_OPEN', brand: 'GoPay', name: 'GoPay Customer Open Denom', nominal: 'Custom Nominal', price: 1000, status: 'READY' },
+
+        // TOKEN PLN
+        { id: 'PLN20', code: 'PLN20', category: 'PLN', brand: 'PLN', name: 'Token Listrik PLN Rp 20.000', nominal: '20.000', price: 20200, status: 'READY' },
+        { id: 'PLN50', code: 'PLN50', category: 'PLN', brand: 'PLN', name: 'Token Listrik PLN Rp 50.000', nominal: '50.000', price: 50200, status: 'READY' },
+        { id: 'PLN100', code: 'PLN100', category: 'PLN', brand: 'PLN', name: 'Token Listrik PLN Rp 100.000', nominal: '100.000', price: 100200, status: 'READY' },
+        { id: 'PLN200', code: 'PLN200', category: 'PLN', brand: 'PLN', name: 'Token Listrik PLN Rp 200.000', nominal: '200.000', price: 200200, status: 'READY' }
+    ];
+
+    // Initialize Firebase Data Sync
+    async function initApp() {
+        try {
+            if (window.APP_CONFIG.firebaseCustom) {
+                const app = initializeApp(window.APP_CONFIG.firebaseCustom);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                await signInAnonymously(auth);
+
+                // Sync App Settings (PIN & Announcement) from Firestore
+                const settingsDocRef = doc(db, 'settings', 'appConfig');
+                onSnapshot(settingsDocRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        if (data.adminPin) {
+                            currentAdminPin = data.adminPin;
+                            localStorage.setItem('EzyDigital_admin_pin', data.adminPin);
+                        }
+                        if (data.announcementText) {
+                            announcementText = data.announcementText;
+                            const annEl = document.getElementById('announcementText');
+                            if (annEl) annEl.innerText = announcementText;
+                            localStorage.setItem('EzyDigital_announcement', announcementText);
+                        }
+                    }
+                });
+
+                // Sync Products Collection
+                const productsColRef = collection(db, 'products');
+                unsubscribeFirestore = onSnapshot(productsColRef, (snapshot) => {
+                    if (snapshot.empty) {
+                        seedInitialData(productsColRef);
+                    } else {
+                        products = [];
+                        snapshot.forEach((doc) => {
+                            products.push({ id: doc.id, ...doc.data() });
+                        });
+                        renderApp();
+                    }
+                }, (error) => {
+                    console.error("Firestore Listener Error:", error);
+                    loadFallbackLocalStorage();
+                });
+            } else {
+                loadFallbackLocalStorage();
+            }
+        } catch (err) {
+            console.warn("Using Local Storage Fallback due to initialization error:", err);
+            loadFallbackLocalStorage();
+        }
+    }
+
+    async function seedInitialData(colRef) {
+        try {
+            for (const item of DEFAULT_SEED_DATA) {
+                await setDoc(doc(colRef, item.id), item);
+            }
+        } catch (e) {
+            console.error("Error seeding initial data:", e);
+            products = [...DEFAULT_SEED_DATA];
+            renderApp();
+        }
+    }
+
+    function loadFallbackLocalStorage() {
+        const stored = localStorage.getItem('EzyDigital_products');
+        if (stored) {
+            try {
+                products = JSON.parse(stored);
+            } catch (e) {
+                products = [...DEFAULT_SEED_DATA];
+            }
+        } else {
+            products = [...DEFAULT_SEED_DATA];
+            localStorage.setItem('EzyDigital_products', JSON.stringify(products));
+        }
+        renderApp();
+    }
+
+    function saveToFallbackLocalStorage() {
+        localStorage.setItem('EzyDigital_products', JSON.stringify(products));
+        renderApp();
+    }
+
+    function renderApp() {
+        filterProducts();
+        renderProviderBadges();
+    }
+
+    window.filterProducts = function() {
+        const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+        const clearBtn = document.getElementById('clearSearchBtn');
+        if (clearBtn) clearBtn.classList.toggle('hidden', query === '');
+
+        filteredProducts = products.filter(p => {
+            const matchCategory = (currentCategory === 'ALL') || (p.category === currentCategory);
+            const matchProvider = (currentProviderFilter === 'ALL') || (p.brand.toLowerCase() === currentProviderFilter.toLowerCase());
+            
+            const matchSearch = query === '' || 
+                (p.code && p.code.toLowerCase().includes(query)) ||
+                (p.brand && p.brand.toLowerCase().includes(query)) ||
+                (p.name && p.name.toLowerCase().includes(query)) ||
+                (p.nominal && p.nominal.toLowerCase().includes(query));
+
+            return matchCategory && matchProvider && matchSearch;
+        });
+
+        document.getElementById('productCountBadge').innerText = `${filteredProducts.length} Produk`;
+
+        if (currentViewMode === 'table') {
+            renderTable();
+        } else {
+            renderGrid();
+        }
+    };
+
+    function renderProviderBadges() {
+        const container = document.getElementById('providerBadgesContainer');
+        if (!container) return;
+
+        let sourceProducts = currentCategory === 'ALL' 
+            ? products 
+            : products.filter(p => p.category === currentCategory);
+
+        const providers = ['ALL', ...new Set(sourceProducts.map(p => p.brand).filter(Boolean))];
+
+        if (providers.length <= 2 && currentCategory !== 'ALL') {
+            container.classList.add('hidden');
+            return;
+        }
+        container.classList.remove('hidden');
+
+        let html = '<span class="text-slate-400 font-medium py-1">Filter Brand:</span>';
+        providers.forEach(prov => {
+            const isActive = currentProviderFilter.toLowerCase() === prov.toLowerCase();
+            const activeClass = isActive 
+                ? 'bg-slate-800 text-white font-semibold' 
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200';
+            
+            const label = prov === 'ALL' ? 'Semua Brand' : prov;
+            html += `<button onclick="setProviderFilter('${prov}')" class="px-2.5 py-1 rounded-lg transition ${activeClass}">${label}</button>`;
+        });
+
+        container.innerHTML = html;
+    }
+
+    window.setProviderFilter = function(prov) {
+        currentProviderFilter = prov;
+        renderApp();
+    };
+
+    window.setCategory = function(cat) {
+        currentCategory = cat;
+        currentProviderFilter = 'ALL';
+        
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            if (btn.getAttribute('data-cat') === cat) {
+                btn.className = "cat-btn active whitespace-nowrap px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl transition bg-indigo-600 text-white shadow-sm";
+            } else {
+                btn.className = "cat-btn whitespace-nowrap px-4 py-2 text-xs sm:text-sm font-medium rounded-xl transition bg-slate-100 text-slate-600 hover:bg-slate-200";
+            }
+        });
+
+        renderApp();
+    };
+
+    window.clearSearch = function() {
+        document.getElementById('searchInput').value = '';
+        filterProducts();
+    };
+
+    window.resetFilters = function() {
+        document.getElementById('searchInput').value = '';
+        currentCategory = 'ALL';
+        currentProviderFilter = 'ALL';
+        setCategory('ALL');
+    };
+
+    function renderTable() {
+        const tbody = document.getElementById('productTableBody');
+        const emptyState = document.getElementById('emptyState');
+        const tableView = document.getElementById('tableView');
+
+        if (filteredProducts.length === 0) {
+            tbody.innerHTML = '';
+            emptyState.classList.remove('hidden');
+            return;
+        }
+
+        emptyState.classList.add('hidden');
+        tableView.classList.remove('hidden');
+
+        let html = '';
+        filteredProducts.forEach(p => {
+            const isOpendenom = p.category === 'EWALLET_OPEN';
+            const formattedPrice = isOpendenom 
+                ? `Admin: Rp ${formatRupiah(p.price)}` 
+                : `Rp ${formatRupiah(p.price)}`;
+            
+            const statusBadge = getStatusBadge(p.status);
+
+            html += `
+            <tr class="hover:bg-slate-50/80 transition group">
+                <td class="py-3.5 px-4 sm:px-6">
+                    <span class="font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded-md text-xs border border-indigo-100">${escapeHtml(p.code)}</span>
+                </td>
+                <td class="py-3.5 px-4 font-semibold text-slate-700">
+                    ${escapeHtml(p.brand)}
+                </td>
+                <td class="py-3.5 px-4">
+                    <div class="font-semibold text-slate-900">${escapeHtml(p.name)}</div>
+                    <div class="text-xs text-slate-400 font-normal">Nominal: ${escapeHtml(p.nominal)}</div>
+                </td>
+                <td class="py-3.5 px-4 text-right">
+                    <span class="font-bold ${isOpendenom ? 'text-purple-700' : 'text-slate-900'} text-base">
+                        ${formattedPrice}
+                    </span>
+                </td>
+                <td class="py-3.5 px-4 text-center">
+                    ${statusBadge}
+                </td>
+                <td class="py-3.5 px-4 text-right admin-col ${isAdminLoggedIn ? '' : 'hidden'}">
+                    <div class="flex items-center justify-end space-x-1">
+                        <button onclick="openEditProductModal('${p.id}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Edit Harga/Detail">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="handleDeleteProduct('${p.id}')" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition" title="Hapus Produk">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    function renderGrid() {
+        const gridView = document.getElementById('gridView');
+        const emptyState = document.getElementById('emptyState');
+
+        if (filteredProducts.length === 0) {
+            gridView.innerHTML = '';
+            emptyState.classList.remove('hidden');
+            return;
+        }
+
+        emptyState.classList.add('hidden');
+        gridView.classList.remove('hidden');
+
+        let html = '';
+        filteredProducts.forEach(p => {
+            const isOpendenom = p.category === 'EWALLET_OPEN';
+            const formattedPrice = isOpendenom 
+                ? `Admin Rp ${formatRupiah(p.price)}` 
+                : `Rp ${formatRupiah(p.price)}`;
+
+            html += `
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 hover:shadow-md transition relative flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="font-mono text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">${escapeHtml(p.code)}</span>
+                        ${getStatusBadge(p.status)}
+                    </div>
+                    <h4 class="font-bold text-slate-800 text-sm mb-1">${escapeHtml(p.name)}</h4>
+                    <p class="text-xs text-slate-500 mb-3">Brand: <span class="font-semibold text-slate-700">${escapeHtml(p.brand)}</span> | Varian: ${escapeHtml(p.nominal)}</p>
+                </div>
+                
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] text-slate-400 block leading-none">Harga Jual</span>
+                        <span class="font-extrabold text-indigo-900 text-base">${formattedPrice}</span>
+                    </div>
+                    ${isAdminLoggedIn ? `
+                    <div class="flex space-x-1">
+                        <button onclick="openEditProductModal('${p.id}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="handleDeleteProduct('${p.id}')" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
+            `;
+        });
+
+        gridView.innerHTML = html;
+    }
+
+    window.switchView = function(mode) {
+        currentViewMode = mode;
+        const tableBtn = document.getElementById('viewTableBtn');
+        const gridBtn = document.getElementById('viewGridBtn');
+        const tableView = document.getElementById('tableView');
+        const gridView = document.getElementById('gridView');
+
+        if (mode === 'table') {
+            tableBtn.className = "p-1.5 rounded-lg border border-slate-300 bg-white text-indigo-600 shadow-xs";
+            gridBtn.className = "p-1.5 rounded-lg border border-slate-300 bg-slate-100 text-slate-500 hover:bg-white";
+            tableView.classList.remove('hidden');
+            gridView.classList.add('hidden');
+        } else {
+            gridBtn.className = "p-1.5 rounded-lg border border-slate-300 bg-white text-indigo-600 shadow-xs";
+            tableBtn.className = "p-1.5 rounded-lg border border-slate-300 bg-slate-100 text-slate-500 hover:bg-white";
+            gridView.classList.remove('hidden');
+            tableView.classList.add('hidden');
+        }
+        renderApp();
+    };
+
+    window.openAdminAuthModal = function() {
+        if (isAdminLoggedIn) {
+            showToast("Anda sudah berada di Mode Admin", "info");
+            return;
+        }
+        document.getElementById('adminPinInput').value = '';
+        document.getElementById('loginErrorMsg').classList.add('hidden');
+        document.getElementById('adminAuthModal').classList.remove('hidden');
+    };
+
+    window.closeAdminAuthModal = function() {
+        document.getElementById('adminAuthModal').classList.add('hidden');
+    };
+
+    window.handleAdminLogin = function(e) {
+        e.preventDefault();
+        const pin = document.getElementById('adminPinInput').value;
+        if (pin === getActiveAdminPin()) {
+            isAdminLoggedIn = true;
+            closeAdminAuthModal();
+            updateAdminUIMode(true);
+            showToast("Berhasil masuk Mode Admin Back-End!", "success");
+        } else {
+            document.getElementById('loginErrorMsg').classList.remove('hidden');
+        }
+    };
+
+    window.openChangePinModal = function() {
+        document.getElementById('oldPinInput').value = '';
+        document.getElementById('newPinInput').value = '';
+        document.getElementById('confirmNewPinInput').value = '';
+        document.getElementById('changePinErrorMsg').classList.add('hidden');
+        document.getElementById('changePinModal').classList.remove('hidden');
+    };
+
+    window.closeChangePinModal = function() {
+        document.getElementById('changePinModal').classList.add('hidden');
+    };
+
+    window.handleChangePin = async function(e) {
+        e.preventDefault();
+        const oldPin = document.getElementById('oldPinInput').value;
+        const newPin = document.getElementById('newPinInput').value;
+        const confirmPin = document.getElementById('confirmNewPinInput').value;
+        const errorEl = document.getElementById('changePinErrorMsg');
+
+        if (oldPin !== getActiveAdminPin()) {
+            errorEl.innerText = "PIN lama tidak sesuai!";
+            errorEl.classList.remove('hidden');
+            return;
+        }
+
+        if (newPin !== confirmPin) {
+            errorEl.innerText = "Konfirmasi PIN baru tidak cocok!";
+            errorEl.classList.remove('hidden');
+            return;
+        }
+
+        currentAdminPin = newPin;
+        localStorage.setItem('EzyDigital_admin_pin', newPin);
+
+        // Sync to Firestore if database is available
+        if (db) {
+            try {
+                await setDoc(doc(db, 'settings', 'appConfig'), { adminPin: newPin }, { merge: true });
+            } catch (err) {
+                console.error("Gagal sync PIN ke Firestore:", err);
+            }
+        }
+
+        closeChangePinModal();
+        showToast("PIN Admin berhasil diperbarui!", "success");
+    };
+
+    window.downloadSampleExcel = function() {
+        if (typeof XLSX === 'undefined') {
+            showToast("Library Excel belum siap. Silahkan refresh halaman.", "error");
+            return;
+        }
+
+        const sampleData = [
+            {
+                "Kode Produk": "TSEL10",
+                "Kategori": "PULSA",
+                "Brand / Provider": "Telkomsel",
+                "Nama Produk": "Telkomsel Pulsa Reguler 10.000",
+                "Nominal / Varian": "10.000",
+                "Harga Jual": 10600,
+                "Status": "READY"
+            },
+            {
+                "Kode Produk": "TSELD5",
+                "Kategori": "DATA",
+                "Brand / Provider": "Telkomsel",
+                "Nama Produk": "Telkomsel Data OMG 5GB 30 Hari",
+                "Nominal / Varian": "5GB / 30Hr",
+                "Harga Jual": 38000,
+                "Status": "READY"
+            },
+            {
+                "Kode Produk": "DANA50",
+                "Kategori": "EWALLET_FIX",
+                "Brand / Provider": "DANA",
+                "Nama Produk": "Saldo DANA Rp 50.000",
+                "Nominal / Varian": "50.000",
+                "Harga Jual": 50500,
+                "Status": "READY"
+            },
+            {
+                "Kode Produk": "DANA-OPEN",
+                "Kategori": "EWALLET_OPEN",
+                "Brand / Provider": "DANA",
+                "Nama Produk": "DANA Transfer Open Denom",
+                "Nominal / Varian": "Custom Nominal",
+                "Harga Jual": 1000,
+                "Status": "READY"
+            },
+            {
+                "Kode Produk": "PLN20",
+                "Kategori": "PLN",
+                "Brand / Provider": "PLN",
+                "Nama Produk": "Token Listrik PLN Rp 20.000",
+                "Nominal / Varian": "20.000",
+                "Harga Jual": 20200,
+                "Status": "READY"
+            }
+        ];
+
+        const worksheet = XLSX.utils.json_to_sheet(sampleData);
+        
+        worksheet['!cols'] = [
+            { wch: 15 },
+            { wch: 15 },
+            { wch: 18 },
+            { wch: 35 },
+            { wch: 18 },
+            { wch: 12 },
+            { wch: 12 }
+        ];
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sample Katalog");
+
+        XLSX.writeFile(workbook, "sample_katalog_produk.xlsx");
+        showToast("Sample Excel berhasil diunduh!", "success");
+    };
+
+    window.importDataExcel = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        if (typeof XLSX === 'undefined') {
+            showToast("Library Excel belum siap. Refresh halaman dan coba lagi.", "error");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+                if (rows.length === 0) {
+                    showToast("File Excel kosong atau tidak sesuai format!", "error");
+                    return;
+                }
+
+                const importedProducts = [];
+
+                rows.forEach((row) => {
+                    const getVal = (possibleKeys) => {
+                        for (const key of Object.keys(row)) {
+                            const cleanKey = key.trim().toLowerCase();
+                            if (possibleKeys.includes(cleanKey)) {
+                                return String(row[key]).trim();
+                            }
+                        }
+                        return "";
+                    };
+
+                    const code = getVal(["kode produk", "kode", "code", "product_code"]).toUpperCase();
+                    let category = getVal(["kategori", "category", "kat"]).toUpperCase();
+                    const brand = getVal(["brand / provider", "brand", "provider"]);
+                    const name = getVal(["nama produk", "nama", "name"]);
+                    const nominal = getVal(["nominal / varian", "nominal", "varian"]);
+                    const priceRaw = getVal(["harga jual", "harga", "price", "biaya admin"]);
+                    let status = getVal(["status", "stok"]).toUpperCase();
+
+                    if (!code || !name) return;
+
+                    if (!['PULSA', 'DATA', 'EWALLET_FIX', 'EWALLET_OPEN', 'PLN'].includes(category)) {
+                        if (category.includes('PULSA')) category = 'PULSA';
+                        else if (category.includes('DATA') || category.includes('PAKET')) category = 'DATA';
+                        else if (category.includes('OPEN')) category = 'EWALLET_OPEN';
+                        else if (category.includes('WALLET') || category.includes('FIX')) category = 'EWALLET_FIX';
+                        else if (category.includes('PLN') || category.includes('LISTRIK')) category = 'PLN';
+                        else category = 'PULSA';
+                    }
+
+                    if (!['READY', 'GANGGUAN', 'KOSONG'].includes(status)) {
+                        if (status.includes('GANGGUAN')) status = 'GANGGUAN';
+                        else if (status.includes('KOSONG') || status.includes('CLOSE')) status = 'KOSONG';
+                        else status = 'READY';
+                    }
+
+                    const price = parseInt(priceRaw.replace(/[^0-9]/g, '')) || 0;
+                    const id = code.replace(/\s+/g, '_');
+
+                    importedProducts.push({
+                        id,
+                        code,
+                        category,
+                        brand: brand || 'Umum',
+                        name,
+                        nominal: nominal || '-',
+                        price,
+                        status
+                    });
+                });
+
+                if (importedProducts.length === 0) {
+                    showToast("Tidak ada baris data valid yang terbaca dari Excel!", "error");
+                    return;
+                }
+
+                if (db) {
+                    const batch = writeBatch(db);
+                    importedProducts.forEach(item => {
+                        const docRef = doc(db, 'products', item.id);
+                        batch.set(docRef, item);
+                    });
+                    await batch.commit();
+                } else {
+                    importedProducts.forEach(imp => {
+                        const idx = products.findIndex(p => p.id === imp.id);
+                        if (idx !== -1) {
+                            products[idx] = imp;
+                        } else {
+                            products.unshift(imp);
+                        }
+                    });
+                    saveToFallbackLocalStorage();
+                }
+
+                showToast(`Berhasil mengimpor ${importedProducts.length} produk dari Excel!`, "success");
+                renderApp();
+
+            } catch (err) {
+                console.error("Excel import error:", err);
+                showToast("Gagal memproses file Excel: " + err.message, "error");
+            }
+        };
+        reader.readAsArrayBuffer(file);
+        event.target.value = "";
+    };
+
+    window.exitAdminMode = function() {
+        isAdminLoggedIn = false;
+        updateAdminUIMode(false);
+        showToast("Keluar dari Mode Admin", "info");
+    };
+
+    function updateAdminUIMode(active) {
+        const controlBar = document.getElementById('adminControlBar');
+        const adminBtnText = document.getElementById('adminBtnText');
+        const adminCols = document.querySelectorAll('.admin-col');
+        const editAnnounceBtn = document.getElementById('editAnnouncementBtn');
+
+        if (active) {
+            controlBar.classList.remove('hidden');
+            adminBtnText.innerText = "Mode Admin (Aktif)";
+            adminCols.forEach(el => el.classList.remove('hidden'));
+            if (editAnnounceBtn) editAnnounceBtn.classList.remove('hidden');
+        } else {
+            controlBar.classList.add('hidden');
+            adminBtnText.innerText = "Panel Admin";
+            adminCols.forEach(el => el.classList.add('hidden'));
+            if (editAnnounceBtn) editAnnounceBtn.classList.add('hidden');
+        }
+        renderApp();
+    }
+
+    window.openAnnouncementModal = function() {
+        document.getElementById('announcementInput').value = announcementText;
+        document.getElementById('announcementModal').classList.remove('hidden');
+    };
+
+    window.closeAnnouncementModal = function() {
+        document.getElementById('announcementModal').classList.add('hidden');
+    };
+
+    window.handleSaveAnnouncement = async function(e) {
+        e.preventDefault();
+        const text = document.getElementById('announcementInput').value.trim();
+        if (text) {
+            announcementText = text;
+            document.getElementById('announcementText').innerText = announcementText;
+            localStorage.setItem('EzyDigital_announcement', announcementText);
+
+            if (db) {
+                try {
+                    await setDoc(doc(db, 'settings', 'appConfig'), { announcementText: text }, { merge: true });
+                } catch (err) {
+                    console.error("Gagal sync pengumuman ke Firestore:", err);
+                }
+            }
+
+            showToast("Pengumuman berhasil diperbarui!", "success");
+        }
+        closeAnnouncementModal();
+    };
+
+    window.openAddProductModal = function() {
+        document.getElementById('modalTitle').innerText = "Tambah Produk Baru";
+        document.getElementById('editProductId').value = '';
+        document.getElementById('productForm').reset();
+        handleCategoryChangeInModal();
+        document.getElementById('productModal').classList.remove('hidden');
+    };
+
+    window.openEditProductModal = function(id) {
+        const p = products.find(item => item.id === id);
+        if (!p) return;
+
+        document.getElementById('modalTitle').innerText = `Edit Produk (${p.code})`;
+        document.getElementById('editProductId').value = p.id;
+        document.getElementById('formCategory').value = p.category;
+        document.getElementById('formCode').value = p.code;
+        document.getElementById('formBrand').value = p.brand;
+        document.getElementById('formNominal').value = p.nominal;
+        document.getElementById('formName').value = p.name;
+        document.getElementById('formPrice').value = p.price;
+        document.getElementById('formStatus').value = p.status;
+
+        handleCategoryChangeInModal();
+        document.getElementById('productModal').classList.remove('hidden');
+    };
+
+    window.closeProductModal = function() {
+        document.getElementById('productModal').classList.add('hidden');
+    };
+
+    window.handleCategoryChangeInModal = function() {
+        const cat = document.getElementById('formCategory').value;
+        const priceLabel = document.getElementById('priceLabel');
+        const openNote = document.getElementById('openDenomNote');
+
+        if (cat === 'EWALLET_OPEN') {
+            priceLabel.innerText = "Biaya Admin Jasa (Rp) *";
+            openNote.classList.remove('hidden');
+        } else {
+            priceLabel.innerText = "Harga Jual (Rp) *";
+            openNote.classList.add('hidden');
+        }
+    };
+
+    window.exportDataJSON = function() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(products, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `katalog_harga_backup_${new Date().toISOString().slice(0,10)}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+        showToast("Backup data produk berhasil diunduh!", "success");
+    };
+
+    window.importDataJSON = function(event) {
+        const fileReader = new FileReader();
+        fileReader.onload = async function() {
+            try {
+                const imported = JSON.parse(fileReader.result);
+                if (Array.isArray(imported)) {
+                    products = imported;
+                    if (db) {
+                        const batch = writeBatch(db);
+                        imported.forEach(item => {
+                            const docRef = doc(db, 'products', item.id || item.code);
+                            batch.set(docRef, item);
+                        });
+                        await batch.commit();
+                    } else {
+                        saveToFallbackLocalStorage();
+                    }
+                    showToast(`Berhasil mengimpor ${imported.length} produk!`, "success");
+                    renderApp();
+                } else {
+                    showToast("Format file JSON tidak valid!", "error");
+                }
+            } catch (err) {
+                showToast("Gagal membaca file JSON: " + err.message, "error");
+            }
+        };
+        if (event.target.files[0]) {
+            fileReader.readAsText(event.target.files[0]);
+        }
+    };
+
+    window.handleSaveProduct = async function(e) {
+        e.preventDefault();
+        const id = document.getElementById('editProductId').value;
+        const code = document.getElementById('formCode').value.toUpperCase().trim();
+        const category = document.getElementById('formCategory').value;
+        const brand = document.getElementById('formBrand').value.trim();
+        const nominal = document.getElementById('formNominal').value.trim();
+        const name = document.getElementById('formName').value.trim();
+        const price = parseInt(document.getElementById('formPrice').value) || 0;
+        const status = document.getElementById('formStatus').value;
+
+        const productData = {
+            code,
+            category,
+            brand,
+            nominal,
+            name,
+            price,
+            status
+        };
+
+        try {
+            if (db) {
+                const productsColRef = collection(db, 'products');
+                if (id) {
+                    await updateDoc(doc(productsColRef, id), productData);
+                    showToast(`Produk ${code} berhasil diperbarui!`, "success");
+                } else {
+                    const newDocId = code.replace(/\s+/g, '_');
+                    await setDoc(doc(productsColRef, newDocId), { id: newDocId, ...productData });
+                    showToast(`Produk ${code} berhasil ditambahkan!`, "success");
+                }
+            } else {
+                if (id) {
+                    const idx = products.findIndex(p => p.id === id);
+                    if (idx !== -1) {
+                        products[idx] = { ...products[idx], ...productData };
+                    }
+                } else {
+                    const newId = code + '_' + Date.now();
+                    products.unshift({ id: newId, ...productData });
+                }
+                saveToFallbackLocalStorage();
+                showToast("Perubahan disimpan!", "success");
+            }
+        } catch (error) {
+            console.error("Error saving product:", error);
+            showToast("Gagal menyimpan produk: " + error.message, "error");
+        }
+
+        closeProductModal();
+    };
+
+    window.handleDeleteProduct = async function(id) {
+        const product = products.find(p => p.id === id);
+        if (!product) return;
+
+        if (!confirm(`Apakah Anda yakin ingin menghapus produk (${product.code} - ${product.name})?`)) {
+            return;
+        }
+
+        try {
+            if (db) {
+                const docRef = doc(db, 'products', id);
+                await deleteDoc(docRef);
+                showToast(`Produk ${product.code} berhasil dihapus!`, "success");
+            } else {
+                products = products.filter(p => p.id !== id);
+                saveToFallbackLocalStorage();
+                showToast(`Produk ${product.code} berhasil dihapus!`, "success");
+            }
+        } catch (err) {
+            console.error("Error deleting product:", err);
+            showToast("Gagal menghapus produk: " + err.message, "error");
+        }
+    };
+
+    window.openBatchMarkupModal = function() {
+        document.getElementById('batchMarkupModal').classList.remove('hidden');
+    };
+
+    window.closeBatchMarkupModal = function() {
+        document.getElementById('batchMarkupModal').classList.add('hidden');
+    };
+
+    window.handleApplyBatchMarkup = async function(e) {
+        e.preventDefault();
+        const cat = document.getElementById('batchCategory').value;
+        const type = document.getElementById('batchType').value;
+        const val = parseFloat(document.getElementById('batchValue').value) || 0;
+
+        let updatedCount = 0;
+
+        try {
+            if (db) {
+                const batch = writeBatch(db);
+                products.forEach(p => {
+                    if (cat === 'ALL' || p.category === cat) {
+                        let newPrice = p.price;
+                        if (type === 'ADD_FIXED') newPrice += val;
+                        else if (type === 'SUB_FIXED') newPrice = Math.max(0, newPrice - val);
+                        else if (type === 'ADD_PERCENT') newPrice = Math.round(newPrice * (1 + val / 100));
+
+                        const docRef = doc(db, 'products', p.id);
+                        batch.update(docRef, { price: newPrice });
+                        updatedCount++;
+                    }
+                });
+                await batch.commit();
+            } else {
+                products.forEach(p => {
+                    if (cat === 'ALL' || p.category === cat) {
+                        let newPrice = p.price;
+                        if (type === 'ADD_FIXED') newPrice += val;
+                        else if (type === 'SUB_FIXED') newPrice = Math.max(0, newPrice - val);
+                        else if (type === 'ADD_PERCENT') newPrice = Math.round(newPrice * (1 + val / 100));
+                        p.price = newPrice;
+                        updatedCount++;
+                    }
+                });
+                saveToFallbackLocalStorage();
+            }
+            showToast(`Berhasil memperbarui harga ${updatedCount} produk!`, "success");
+            closeBatchMarkupModal();
+            renderApp();
+        } catch (err) {
+            console.error("Error batch updating prices:", err);
+            showToast("Gagal mengubah harga massal: " + err.message, "error");
+        }
+    };
+
+    // Helper functions
+    function getStatusBadge(status) {
+        if (status === 'GANGGUAN') {
+            return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200"><i class="fa-solid fa-triangle-exclamation mr-1 text-[10px]"></i>Gangguan</span>`;
+        } else if (status === 'KOSONG') {
+            return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200"><i class="fa-solid fa-circle-xmark mr-1 text-[10px]"></i>Kosong</span>`;
+        } else {
+            return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200"><i class="fa-solid fa-circle-check mr-1 text-[10px]"></i>Ready</span>`;
+        }
+    }
+
+    function formatRupiah(number) {
+        return new Intl.NumberFormat('id-ID').format(number);
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function showToast(message, type = "success") {
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMessage');
+        const toastIcon = document.getElementById('toastIcon');
+
+        if (!toast || !toastMsg || !toastIcon) return;
+
+        toastMsg.innerText = message;
+
+        if (type === 'error') {
+            toastIcon.className = 'fa-solid fa-circle-xmark text-red-400 text-base';
+        } else if (type === 'info') {
+            toastIcon.className = 'fa-solid fa-circle-info text-blue-400 text-base';
+        } else {
+            toastIcon.className = 'fa-solid fa-circle-check text-emerald-400 text-base';
+        }
+
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+
+        setTimeout(() => {
+            toast.classList.remove('translate-y-0', 'opacity-100');
+            toast.classList.add('translate-y-20', 'opacity-0');
+        }, 3000);
+    }
+
+    // Secret Admin Logo Click Listener (Klik logo 5 kali untuk membuka login admin)
+    let logoClickCount = 0;
+    let logoClickTimer = null;
+    const logoTrigger = document.getElementById('secretLogoTrigger');
+    if (logoTrigger) {
+        logoTrigger.addEventListener('click', () => {
+            logoClickCount++;
+            if (logoClickCount === 1) {
+                logoClickTimer = setTimeout(() => {
+                    logoClickCount = 0;
+                }, 2000);
+            }
+            if (logoClickCount >= 5) {
+                clearTimeout(logoClickTimer);
+                logoClickCount = 0;
+                openAdminAuthModal();
+            }
+        });
+    }
+
+    // Startup Initialization
+    applyContactConfig();
+    initApp();
+</script>
+</body>
+</html>
